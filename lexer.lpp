@@ -1,0 +1,33 @@
+%{
+#include "Node.h"
+#include "parser.tab.h"
+
+extern void yyerror(const char *s);
+
+%}
+
+
+
+%%
+
+[a-z]+       { 
+                // we have to copy because we can't rely on yytext not changing underneath us:
+				char *res = new char[strlen(yytext) + 1];
+				strcpy(res, yytext);
+				yylval.sval = res;
+				
+				return ID;
+            }
+
+[0-9]+      {
+                yylval.ival = atoi(yytext);
+                return INT;
+            }
+
+[-+*/()^]   {   return *yytext; }
+
+[ \t\n]+    ; // The whitespace!!! It does nothing!!!
+
+.           yyerror("Unknown character");
+
+%%
